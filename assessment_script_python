@@ -21,9 +21,14 @@ def determine_maturity_level(score, total=False):
 def get_scores_for_level(capability, level, max_points):
     score = 0
     for point in range(1, max_points + 1):
-        response = input(f"Confirm {capability} {level} capability {point} (y/n): ").strip().lower()
-        if response == 'y':
-            score += point
+        while True:  # Add a loop to ensure valid input
+            response = input(f"Confirm {capability} {level} capability {point} (y/n): ").strip().lower()
+            if response in ['y', 'n']:  # Check if response is valid
+                if response == 'y':
+                    score += point
+                break  # Exit the loop for both 'y' and 'n' responses
+            else:
+                print("Invalid input. Please enter 'y' for yes or 'n' for no.")
     return score
 
 def calculate_adjusted_score(capabilities_maturity, total_score):
