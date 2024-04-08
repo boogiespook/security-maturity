@@ -18,16 +18,13 @@ def determine_maturity_level(score, total=False):
         else:
             return "Advanced"
 
-def get_score(prompt, min_value, max_value, allow_zero=False):
-    while True:
-        try:
-            score = int(input(prompt))
-            if (score == 0 and allow_zero) or (min_value <= score <= max_value):
-                return score
-            else:
-                print(f"Please enter a value between {min_value} and {max_value}, or '0' if applicable.")
-        except ValueError:
-            print("Invalid input. Please enter a numeric value.")
+def get_scores_for_level(capability, level, max_points):
+    score = 0
+    for point in range(1, max_points + 1):
+        response = input(f"Confirm {capability} {level} capability {point} (y/n): ").strip().lower()
+        if response == 'y':
+            score += point
+    return score
 
 def calculate_adjusted_score(capabilities_maturity, total_score):
     base_multipliers = {"Foundational": 1.02, "Strategic": 1.03, "Advanced": 1.04}
@@ -72,10 +69,12 @@ def main():
 
     for capability in capabilities:
         print(f"\nEntering scores for {capability}:")
-        foundational_score = get_score("Enter score for Foundational function (1-3 points or '0' if not applicable): ", 1, 3, allow_zero=True)
-        strategic_score = get_score("Enter score for Strategic function (4-6 points or '0' if not applicable): ", 4, 6, allow_zero=True)
-        advanced_score = get_score("Enter score for Advanced function (7-8 points or '0' if not applicable): ", 7, 8, allow_zero=True)
-        capability_score = sum(range(1, max(foundational_score, strategic_score, advanced_score) + 1))
+
+        foundational_score = get_scores_for_level(capability, "Foundational", 3)
+        strategic_score = get_scores_for_level(capability, "Strategic", 3)
+        advanced_score = get_scores_for_level(capability, "Advanced", 2)
+
+        capability_score = foundational_score + strategic_score + advanced_score
         capability_maturity = determine_maturity_level(capability_score)
         capabilities_maturity[capability_maturity] += 1
         total_score += capability_score
